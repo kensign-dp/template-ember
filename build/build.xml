@@ -191,23 +191,6 @@
         <echo>JSHint Successful</echo>
     </target>
     
-    <!-- CSSLint target, run separately -->
-    <target name="csslint">
-        <apply dir="${dir.source}/${dir.css}" executable="java" parallel="false" failonerror="true">
-            <fileset dir="./${dir.source}/">
-                <include name="**/${dir.css}/*.css"/>
-                <exclude name="**/*.min.css"/>
-                <exclude name="**/${dir.publish}/"/>
-            </fileset>
-            <arg value="-jar" />
-            <arg path="./${dir.build.tools}/${tool.rhino}" />
-            <arg path="./${dir.build.tools}/${tool.csslint}" />
-            <srcfile/>
-            <arg value="${tool.csslint.opts}" />
-        </apply>
-        <echo>CSSLint Successful</echo>
-    </target>
-    
     <!--
     *************************************************
     * BUILD TARGETS                                 *
@@ -265,8 +248,6 @@
     <!-- Target: buildkit -->
     <target name="-buildkit.dev"
           depends="-intro,
-                   -imagespng,
-                   -imagesjpg,
                    -copyall"/>
     <target name="-buildkit.test"
           depends="-intro,
@@ -276,8 +257,6 @@
                    -js.scripts.concat,
                    -css,
                    -htmlbuildkit,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     <target name="-buildkit.production"
@@ -288,16 +267,12 @@
                    -js.scripts.concat,
                    -css,
                    -htmlbuildkit,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     
     <!-- Target: build -->
     <target name="-build.dev"
           depends="-intro,
-                   -imagespng,
-                   -imagesjpg,
                    -copyall"/>
     <target name="-build.test"
           depends="-intro,
@@ -306,9 +281,6 @@
                    -js.main.concat,
                    -js.scripts.concat,
                    -css,
-                   -htmlclean,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     <target name="-build.production"
@@ -319,16 +291,12 @@
                    -js.scripts.concat,
                    -css,
                    -htmlclean,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     
     <!-- Target: minify -->
     <target name="-minify.dev"
           depends="-intro,
-                   -imagespng,
-                   -imagesjpg,
                    -copyall"/>
     <target name="-minify.test"
           depends="-intro,
@@ -338,8 +306,6 @@
                    -js.scripts.concat,
                    -css,
                    -htmlcompress,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     <target name="-minify.production"
@@ -350,8 +316,6 @@
                    -js.scripts.concat,
                    -css,
                    -htmlcompress,
-                   -imagespng,
-                   -imagesjpg,
                    -copy,
                    -jsdoc3"/>
     
@@ -519,7 +483,7 @@
                 <exclude name="${dir.js}/scripts-concat.js"/>
             </fileset>
             <arg line="-jar"/>
-            <arg path="./${dir.build.tools}/closure-compiler-v1346.jar"/>
+            <arg path="./${dir.build.tools}/closure-compiler.jar"/>
             <arg line="--js"/>
             <srcfile/>
             <arg line="--compilation_level" />
@@ -828,7 +792,7 @@
         <apply executable="java" parallel="false">
             <fileset dir="${dir.intermediate}/${dir.css}/" includes="style-concat.css"/>
             <arg line="-jar"/>
-            <arg path="${dir.build.tools}/${tool.yuicompressor}"/>
+            <arg path="${dir.build.tools}/${tool.closurestylesheets}"/>
             <srcfile/>
             <arg line="-o"/>
             <mapper type="merge" to="${basedir}/${dir.intermediate}/${dir.css}/style-concat.min.css"/>
@@ -842,158 +806,15 @@
         <apply executable="java" parallel="false">
             <fileset dir="${dir.source}/${dir.css}/" excludes="${concat-files}" includes="**/*.css"/>
             <arg line="-jar"/>
-            <arg path="${dir.build.tools}/${tool.yuicompressor}"/>
+            <arg path="${dir.build.tools}/${tool.closurestylesheets}"/>
             <srcfile/>
             <arg line="-o"/>
             <mapper type="glob" from="*.css" to="${basedir}/${dir.publish}/${dir.css}/*.css"/>
             <targetfile/>
         </apply>
     </target>
-    <!-- bring back the glory of hot pink -->
-    <target name="hawterize">
-        <replace file="${dir.source}/${dir.css}/${file.root.stylesheet}"
-                        token="#b3d4fc"
-                       value="#fe57a1" />
-    </target>
+ 
     
-    <!-- IMAGES -->
-    <target name="-imagespng" depends="-mkdirs" description="(PRIVATE) Optimizes .png images using optipng">
-        <echo message="Optimizing images..."/>
-        <echo message="This part might take a while. But everything else is already done."/>
-        <echo message=" "/>
-        <echo message="First, we run optipng on the .png files..."/>
-        <if>
-            <equals arg1="${images.strip.metadata}" arg2="true"/>
-            <then>
-                <var name="strip-meta-tags" value="-strip all"/>
-            </then>
-            <else>
-                <var name="strip-meta-tags" value=""/>
-            </else>
-        </if>
-        <!-- osfamily=unix is actually true on OS X as well -->
-        <!-- On *nix's and OS X, check for optipng and give a helpful message if it's not installed -->
-        <if>
-            <and>
-                <os family="unix" />
-                <available file="optipng" filepath="${ENV.PATH}" />
-            </and>
-            <then>
-                <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
-                <if>
-                  <available file="./${dir.publish}/${dir.images}/" type="dir" />
-                    <then>
-                      <delete>
-                          <fileset dir="./${dir.publish}/${dir.images}/">
-                              <include name="**/*.png"/>
-                          </fileset>
-                      </delete>
-                    </then>
-                </if>
-                <apply executable="optipng" dest="./${dir.publish}/${dir.images}/" osfamily="unix">
-                    <fileset dir="./${dir.source}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
-                    <arg value="-quiet"/>
-                    <arg value="-o7"/>
-                    <!--
-                       Temporarily fixes #39
-                       <arg value="${strip-meta-tags}"/>
-                    -->
-                    <arg value="-out"/>
-                    <targetfile/>
-                    <srcfile/>
-                    <mapper type="identity"/>
-                </apply>
-            </then>
-            <elseif>
-                <os family="unix" />
-                <then>
-                    <echo message="*** optipng NOT INSTALLED. SKIPPING OPTIMIZATION OF PNGs." />
-                    <echo message="*** Install optipng to enable png optimization." />
-                    <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
-                </then>
-            </elseif>
-            <elseif>
-                <os family="windows" />
-                <!-- work around https://sourceforge.net/tracker/?func=detail&aid=2671422&group_id=151404&atid=780916 -->
-                <then>
-                  <if>
-                    <available file="./${dir.publish}/${dir.images}/"/>
-                      <then>
-                      <delete>
-                        <fileset dir="./${dir.publish}/${dir.images}/">
-                            <include name="**/*.png"/>
-                        </fileset>
-                      </delete>
-                    </then>
-                  </if>
-                    <apply executable="${basedir}/${dir.build.tools}/optipng-0.7-win32/optipng.exe" dest="./${dir.publish}/${dir.images}/" osfamily="windows">
-                        <fileset dir="./${dir.source}/${dir.images}/" includes="**/*.png"  excludes="${images.bypass}, ${images.default.bypass}"/>
-                        <arg value="-quiet"/>
-                        <arg value="-o7"/>
-                        <arg value="${strip-meta-tags}"/>
-                        <arg value="-out"/>
-                        <targetfile/>
-                        <srcfile/>
-                        <mapper type="identity"/>
-                    </apply>
-                </then>
-            </elseif>
-        </if>
-    </target>
-    <target name="-imagesjpg" depends="-mkdirs" description="(PRIVATE) Optimizes .jpg images using jpegtan">
-        <echo message="Now, we clean up those jpgs..."/>
-        <if>
-            <equals arg1="${images.strip.metadata}" arg2="true"/>
-            <then>
-                <var name="strip-meta-tags" value="none"/>
-            </then>
-            <else>
-                <var name="strip-meta-tags" value="all"/>
-            </else>
-        </if>
-        
-        <!-- On *nix's and OS X, check for jpegtran and give a helpful message if it's not installed -->
-        <if>
-            <and>
-                <os family="unix" />
-                <available file="jpegtran" filepath="${ENV.PATH}" />
-            </and>
-            <then>
-                <apply executable="jpegtran" dest="./${dir.publish}/${dir.images}" osfamily="unix">
-                    <fileset dir="${dir.source}/${dir.images}" includes="**/*.jpg" excludes="${images.bypass}, ${images.default.bypass}"/>
-                    <arg value="-copy"/>
-                    <arg value="${strip-meta-tags}"/>
-                    <arg value="-optimize"/>
-                    <arg value="-outfile"/>
-                    <targetfile/>
-                    <srcfile/>
-                    <mapper type="identity"/>
-                    <!-- you may want to flag optimized images. If so, do it here. Otherwise change this to type="identity" -->
-                    <!--<mapper type="glob" from="*.jpg" to="*.jpg"/>-->
-                </apply>
-            </then>
-            <elseif>
-                <os family="unix" />
-                <then>
-                    <echo message="*** jpegtran NOT INSTALLED. SKIPPING OPTIMIZATION OF JPEGs." />
-                    <echo message="*** Install jpegtran to enable jpeg optimization." />
-                    <echo message="*** For instructions see 'Dependencies' at: https://github.com/h5bp/ant-build-script/wiki/Platform" />
-                </then>
-            </elseif>
-        </if>
-        <apply executable="${basedir}/${dir.build.tools}/jpegtran.exe" dest="./${dir.publish}/${dir.images}" osfamily="windows">
-            <fileset dir="${dir.source}/${dir.images}" includes="**/*.jpg"  excludes="${images.bypass}, ${images.default.bypass}"/>
-            <arg value="-copy"/>
-            <arg value="${strip-meta-tags}"/>
-            <arg value="-optimize"/>
-            <arg value="-outfile"/>
-            <targetfile/>
-            <srcfile/>
-            <mapper type="identity"/>
-            <!-- you may want to flag optimized images. If so, do it here. Otherwise change this to type="identity" -->
-            <!--<mapper type="glob" from="*.jpg" to="*.jpg"/>-->
-        </apply>
-    </target>
     <target name="-jsdoc3" description="(PRIVATE) Publishes documentation">
         <!-- Delete any existing docs directory -->
         <echo message="Deleting previous documentation"/>
