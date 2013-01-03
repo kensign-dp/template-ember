@@ -1,8 +1,7 @@
 
 This project is a branch of HTML5 Boilerplate.
 
-HTML5 Boilerplate is a professional front-end skeleton for building fast,
-robust, and adaptable web apps or sites.
+HTML5 Boilerplate is a professional front-end skeleton for building fast,robust, and adaptable web apps or sites.
 
 [Closure Tools](https://developers.google.com/closure/) and more specifically the the [Closure Compiler](https://developers.google.com/closure/compiler/)
 can play a huge roll in the development of your project, if you choose to take advantage of them. By default, the Closure Compiler serves as the HTML 
@@ -16,12 +15,19 @@ release you'd like to use. The structure for this template is as follows:
 
   myApp/
         js/ *<- your main app code here.*        	
+        	
         	lib/ *<- libraries you use here.*
+        	
         	lib/mvc/*<- PlastronJS here.*
+        
         css/ *<- CSS/GSS/SASS etc.*
+        
         template/ *<- Soy files here.*
-		build/ *<-Ant files, compilers, linting and compression.* see [ant-build-script](https://github.com/kensign-dhap/ant-build-script) for more info.
-		intermediate/ *<- scratch directory for ant build *
+        
+		build/ *<-Ant files, compilers, linting and compression. see [ant-build-script](https://github.com/kensign-dhap/ant-build-script) for more info.*
+		
+		intermediate/ *<- scratch directory for ant build. *
+		
 		publish/ *<- the completed site generated from the ant build, compressed, linted and compiled. 
 
 
