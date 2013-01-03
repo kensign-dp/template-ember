@@ -219,6 +219,7 @@ samp {
 
 pre {
     white-space: pre;
+    /* @alternate */
     white-space: pre-wrap;
     word-wrap: break-word;
 }
@@ -238,6 +239,7 @@ q {
 q:before,
 q:after {
     content: '';
+    /* @alternate */
     content: none;
 }
 
