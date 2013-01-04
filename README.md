@@ -1,4 +1,3 @@
-
 This project is a branch of HTML5 Boilerplate.
 
 HTML5 Boilerplate is a professional front-end skeleton for building fast,
@@ -25,4 +24,3 @@ release you'd like to use. The structure for this template is as follows:
 
 * [ant-build-script](https://github.com/kensign-dhap/ant-build-script) has been integrated. 
 * [Emberjs](https://github.com/emberjs/ember.js) has been integrated. 
-
