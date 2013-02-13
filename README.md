@@ -8,7 +8,7 @@ compressor, CSS-linter, compressor and compiler, running SASS or LESS, based on 
 
 ## Quick start
 
-Clone the git repo — `git clone https://github.com/kensign-dhap/dhap-template.git` - and checkout the tagged
+Clone the git repo — `git clone https://github.com/kensign-dp/template-ember.git` - and checkout the tagged
 release you'd like to use. The structure for this template is as follows:
 
 	myApp/
@@ -22,5 +22,5 @@ release you'd like to use. The structure for this template is as follows:
 
 ## Included Features
 
-* [ant-build-script](https://github.com/kensign-dhap/ant-build-script) has been integrated. 
+* [ant-build-script](https://github.com/kensign-dp/ant-build-script) has been integrated. 
 * [Emberjs](https://github.com/emberjs/ember.js) has been integrated. 
